@@ -1,6 +1,6 @@
 """link helpers."""
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 from urllib.parse import urljoin
 
 import attr
@@ -21,7 +21,7 @@ def filter_links(links: List[Dict]) -> List[Dict]:
 class BaseLinks:
     """Create inferred links common to collections and items."""
 
-    collection_id: str = attr.ib()
+    collection_id: Optional[str] = attr.ib()
     base_url: str = attr.ib()
 
     def root(self) -> Link:
@@ -110,7 +110,8 @@ class ItemLinks(BaseLinks):
             self.collection(),
             self.root(),
         ]
-        # if config.settings.add_on_is_enabled(config.AddOns.tiles):
         # TODO: Don't always append tiles link
-        links.append(self.tiles())
+        # TODO: Look at using inheritence mechanism to support changes to the
+        # core client and response.
+        # links.append(self.tiles())
         return links
