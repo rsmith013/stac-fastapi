@@ -32,7 +32,7 @@ services:
     depends_on:
       - database
     command:
-      python -m stac_fastapi.sqlalchemy.app
+      bash -c "./scripts/wait-for-it.sh database:5432 && python -m stac_fastapi.sqlalchemy.app"
 
   app-pgstac:
     container_name: stac-fastapi-pgstac
@@ -65,11 +65,11 @@ services:
     depends_on:
       - database
     command:
-      python -m stac_fastapi.pgstac.app
+      bash -c "./scripts/wait-for-it.sh database:5432 && python -m stac_fastapi.pgstac.app"
 
   database:
     container_name: stac-db
-    image: bitner/pgstac:0.2.4
+    image: ghcr.io/stac-utils/pgstac:v0.2.8
     environment:
       - POSTGRES_USER=username
       - POSTGRES_PASSWORD=password
@@ -78,7 +78,8 @@ services:
       - "5439:5432"
     command: postgres -N 500
 
-  sqlalchemy-migration:
+  # Load joplin demo dataset into the SQLAlchemy Application
+  loadjoplin-sqlalchemy:
     image: stac-utils/stac-fastapi
     environment:
       - ENVIRONMENT=development
@@ -91,12 +92,13 @@ services:
       - ./stac_fastapi:/app/stac_fastapi
       - ./scripts:/app/scripts
     command: >
-      bash -c "sleep 10 && cd stac_fastapi/sqlalchemy && alembic upgrade head && python /app/scripts/ingest_joplin.py http://app-sqlalchemy:8081"
+      bash -c "./scripts/wait-for-it.sh app-sqlalchemy:8081 && cd stac_fastapi/sqlalchemy && alembic upgrade head && python /app/scripts/ingest_joplin.py http://app-sqlalchemy:8081"
     depends_on:
       - database
       - app-sqlalchemy
 
-  pgstac-loadjoplin:
+  # Load joplin demo dataset into the PGStac Application
+  loadjoplin-pgstac:
     image: stac-utils/stac-fastapi
     environment:
       - ENVIRONMENT=development
@@ -108,8 +110,13 @@ services:
     volumes:
       - ./stac_fastapi:/app/stac_fastapi
       - ./scripts:/app/scripts
-    command: >
-      bash -c "sleep 10 && python /app/scripts/ingest_joplin.py http://app-pgstac:8082"
+    command:
+      - "./scripts/wait-for-it.sh"
+      - "app-pgstac:8082"
+      - "--"
+      - "python"
+      - "/app/scripts/ingest_joplin.py"
+      - "http://app-pgstac:8082"
     depends_on:
       - database
       - app-pgstac
