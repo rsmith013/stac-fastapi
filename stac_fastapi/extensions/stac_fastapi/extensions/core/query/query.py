@@ -6,6 +6,8 @@ from fastapi import FastAPI
 
 from stac_fastapi.types.extension import ApiExtension
 
+from .request import QueryExtensionGetRequest, QueryExtensionPostRequest
+
 
 @attr.s
 class QueryExtension(ApiExtension):
@@ -20,6 +22,8 @@ class QueryExtension(ApiExtension):
     conformance_classes: List[str] = attr.ib(
         default=["https://api.stacspec.org/v1.0.0-beta.2/item-search#query"]
     )
+    GET = QueryExtensionGetRequest
+    POST = QueryExtensionPostRequest
 
     def register(self, app: FastAPI) -> None:
         """Register the extension with a FastAPI application.

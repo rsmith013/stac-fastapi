@@ -6,6 +6,8 @@ from fastapi import FastAPI
 
 from stac_fastapi.types.extension import ApiExtension
 
+from .request import SortExtensionGetRequest, SortExtensionPostRequest
+
 
 @attr.s
 class SortExtension(ApiExtension):
@@ -20,6 +22,8 @@ class SortExtension(ApiExtension):
     conformance_classes: List[str] = attr.ib(
         default=["https://api.stacspec.org/v1.0.0-beta.2/item-search#sort"]
     )
+    GET = SortExtensionGetRequest
+    POST = SortExtensionPostRequest
 
     def register(self, app: FastAPI) -> None:
         """Register the extension with a FastAPI application.

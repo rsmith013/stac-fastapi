@@ -6,6 +6,8 @@ from fastapi import FastAPI
 
 from stac_fastapi.types.extension import ApiExtension
 
+from .request import FieldsExtensionGetRequest, FieldsExtensionPostRequest
+
 
 @attr.s
 class FieldsExtension(ApiExtension):
@@ -23,6 +25,9 @@ class FieldsExtension(ApiExtension):
         conformance_classes (list): Defines the list of conformance classes for the extension
 
     """
+
+    GET = FieldsExtensionGetRequest
+    POST = FieldsExtensionPostRequest
 
     default_includes: Set[str] = attr.ib(
         default=attr.Factory(
