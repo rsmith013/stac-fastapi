@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 
 import attr
 from stac_pydantic.api import Search
-from stac_pydantic.links import Link, Relations
+from stac_pydantic.links import Relations
 from stac_pydantic.shared import MimeTypes
 from stac_pydantic.version import STAC_VERSION
 
@@ -262,7 +262,7 @@ class LandingPageMixin:
                     "rel": Relations.conformance.value,
                     "type": MimeTypes.json,
                     "title": "STAC/WFS3 conformance classes implemented by this server",
-                    "href": base_url,
+                    "href": urljoin(base_url, "conformance"),
                 },
                 {
                     "rel": Relations.search.value,
@@ -275,13 +275,13 @@ class LandingPageMixin:
         )
 
         if self.extension_is_enabled("FilterExtension"):
-            landing_page.links.append(
-                Link(
-                    rel="http://www.opengis.net/def/rel/ogc/1.0/queryables",
-                    type=MimeTypes.geojson,
-                    title="Filter Queryables",
-                    href=urljoin(str(base_url), "queryables"),
-                )
+            landing_page["links"].append(
+                {
+                    "rel": "http://www.opengis.net/def/rel/ogc/1.0/queryables",
+                    "type": MimeTypes.geojson,
+                    "title": "Filter Queryables",
+                    "href": urljoin(str(base_url), "queryables"),
+                }
             )
 
         return landing_page
@@ -304,8 +304,9 @@ class BaseCoreClient(LandingPageMixin, abc.ABC):
     def list_conformance_classes(self):
         """Return a list of conformance classes, including implemented extensions."""
         base_conformance = [
-            "https://stacspec.org/STAC-api.html",
-            "http://docs.opengeospatial.org/is/17-069r3/17-069r3.html#ats_geojson",
+            "https://api.stacspec.org/v1.0.0-beta.2/core",
+            "https://api.stacspec.org/v1.0.0-beta.2/ogcapi-features",
+            "https://api.stacspec.org/v1.0.0-beta.2/item-search",
         ]
 
         for extension in self.extensions:
@@ -325,14 +326,15 @@ class BaseCoreClient(LandingPageMixin, abc.ABC):
         base_url = str(kwargs["request"].base_url)
 
         landing_page = self._landing_page(base_url=base_url)
+        landing_page["conformsTo"] = self.list_conformance_classes()
         collections = self.all_collections(request=kwargs["request"])
         for collection in collections:
             landing_page["links"].append(
                 {
                     "rel": Relations.child.value,
                     "type": MimeTypes.json.value,
-                    "title": collection.get("title"),
-                    "href": urljoin(base_url, f"collections/{collection['id']}"),
+                    "title": collection.title,
+                    "href": urljoin(base_url, f"collections/{collection.id}"),
                 }
             )
         return landing_page
