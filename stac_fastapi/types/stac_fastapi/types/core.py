@@ -328,13 +328,13 @@ class BaseCoreClient(LandingPageMixin, abc.ABC):
         landing_page = self._landing_page(base_url=base_url)
         landing_page["conformsTo"] = self.list_conformance_classes()
         collections = self.all_collections(request=kwargs["request"])
-        for collection in collections:
+        for collection in collections["collections"]:
             landing_page["links"].append(
                 {
                     "rel": Relations.child.value,
                     "type": MimeTypes.json.value,
-                    "title": collection.title,
-                    "href": urljoin(base_url, f"collections/{collection.id}"),
+                    "title": collection.get("title") or collection.get("id"),
+                    "href": urljoin(base_url, f"collections/{collection['id']}"),
                 }
             )
         return landing_page
