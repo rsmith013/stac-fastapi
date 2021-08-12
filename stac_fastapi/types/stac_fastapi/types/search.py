@@ -65,37 +65,8 @@ class APIRequest(abc.ABC):
         return self.__dict__
 
 
-@attr.s
-class BaseSearchGetRequest(APIRequest):
-    """Base arguments for GET Request."""
-
-    collections: Optional[str] = attr.ib(default=None, converter=str2list)
-    ids: Optional[str] = attr.ib(default=None, converter=str2list)
-    bbox: Optional[str] = attr.ib(default=None, converter=str2list)
-    intersects: Optional[str] = attr.ib(default=None, converter=str2list)
-    datetime: Optional[Union[str]] = attr.ib(default=None)
-    limit: Optional[int] = attr.ib(default=10)
-
-
-class BaseSearchPostRequest(BaseModel):
-    """Search model.
-
-    Replace base model in STAC-pydantic as it includes additional fields,
-    not in the core model.
-    https://github.com/radiantearth/stac-api-spec/tree/master/item-search#query-parameter-table
-
-    PR to fix this:
-    https://github.com/stac-utils/stac-pydantic/pull/100
-    """
-
-    collections: Optional[List[str]]
-    ids: Optional[List[str]]
-    bbox: Optional[BBox]
-    intersects: Optional[
-        Union[Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon]
-    ]
-    datetime: Optional[str]
-    limit: int = 10
+class DatetimeProcessingMixin:
+    """Abstract processed datetime properties."""
 
     @property
     def start_date(self) -> Optional[datetime]:
@@ -122,6 +93,44 @@ class BaseSearchPostRequest(BaseModel):
         if values[1] == "..":
             return None
         return parse_datetime(values[1])
+
+
+@attr.s
+class BaseSearchGetRequest(DatetimeProcessingMixin, APIRequest):
+    """Base arguments for GET Request."""
+
+    collections: Optional[str] = attr.ib(default=None, converter=str2list)
+    ids: Optional[str] = attr.ib(default=None, converter=str2list)
+    bbox: Optional[str] = attr.ib(default=None, converter=str2list)
+    intersects: Optional[str] = attr.ib(default=None, converter=str2list)
+    datetime: Optional[Union[str]] = attr.ib(default=None)
+    limit: Optional[int] = attr.ib(default=10)
+
+    def __attrs_post_init__(self):
+        """Add processed datetime endopoints to attr dict."""
+        self.__dict__["start_date"] = self.start_date
+        self.__dict__["end_date"] = self.end_date
+
+
+class BaseSearchPostRequest(DatetimeProcessingMixin, BaseModel):
+    """Search model.
+
+    Replace base model in STAC-pydantic as it includes additional fields,
+    not in the core model.
+    https://github.com/radiantearth/stac-api-spec/tree/master/item-search#query-parameter-table
+
+    PR to fix this:
+    https://github.com/stac-utils/stac-pydantic/pull/100
+    """
+
+    collections: Optional[List[str]]
+    ids: Optional[List[str]]
+    bbox: Optional[BBox]
+    intersects: Optional[
+        Union[Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon]
+    ]
+    datetime: Optional[str]
+    limit: int = 10
 
     @validator("intersects")
     def validate_spatial(cls, v, values):
