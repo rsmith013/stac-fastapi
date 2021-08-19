@@ -112,11 +112,11 @@ class GETTokenPagination(APIRequest):
 class POSTPagination(BaseModel):
     """Page based pagination for POST requests."""
 
-    page: Optional[str] = None
+    page: Optional[str] = 1
 
 
 @attr.s
 class GETPagination(APIRequest):
     """Page based pagination for GET requests."""
 
-    page: Optional[str] = attr.ib(default=None)
+    page: Optional[str] = attr.ib(default=1)
