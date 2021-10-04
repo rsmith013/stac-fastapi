@@ -63,36 +63,36 @@ class TransactionExtension(ApiExtension):
         raise NotImplementedError
 
     def register_create_item(self):
-        """Register create item endpoint (POST /collections/{collectionId}/items)."""
+        """Register create item endpoint (POST /collections/{collection_id}/items)."""
         self.router.add_api_route(
             name="Create Item",
-            path="/collections/{collectionId}/items",
+            path="/collections/{collection_id}/items",
             response_model=Item if self.settings.enable_response_models else None,
             response_class=self.response_class,
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
-            methods=["POST"],
-            endpoint=self._create_endpoint(self.client.create_item, stac_types.Item),
+            methods=['POST'],
+            endpoint=self.client.create_item,
         )
 
     def register_update_item(self):
-        """Register update item endpoint (PUT /collections/{collectionId}/items)."""
+        """Register update item endpoint (PUT /collections/{collection_id}/items/{item_id})."""
         self.router.add_api_route(
             name="Update Item",
-            path="/collections/{collectionId}/items",
+            path="/collections/{collection_id}/items/{item_id}",
             response_model=Item if self.settings.enable_response_models else None,
             response_class=self.response_class,
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
-            methods=["PUT"],
-            endpoint=self._create_endpoint(self.client.update_item, stac_types.Item),
+            methods=['PUT'],
+            endpoint=self.client.update_item,
         )
 
     def register_delete_item(self):
-        """Register delete item endpoint (DELETE /collections/{collectionId}/items/{itemId})."""
+        """Register delete item endpoint (DELETE /collections/{collection_id}/items/{item_id})."""
         self.router.add_api_route(
             name="Delete Item",
-            path="/collections/{collectionId}/items/{itemId}",
+            path="/collections/{collection_id}/items/{item_id}",
             response_model=Item if self.settings.enable_response_models else None,
             response_class=self.response_class,
             response_model_exclude_unset=True,
@@ -110,32 +110,28 @@ class TransactionExtension(ApiExtension):
             response_class=self.response_class,
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
-            methods=["POST"],
-            endpoint=self._create_endpoint(
-                self.client.create_collection, stac_types.Collection
-            ),
+            methods=['POST'],
+            endpoint=self.client.create_collection,
         )
 
     def register_update_collection(self):
         """Register update collection endpoint (PUT /collections)."""
         self.router.add_api_route(
             name="Update Collection",
-            path="/collections",
+            path="/collections/{collection_id}/",
             response_model=Collection if self.settings.enable_response_models else None,
             response_class=self.response_class,
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
-            methods=["PUT"],
-            endpoint=self._create_endpoint(
-                self.client.update_collection, stac_types.Collection
-            ),
+            methods=['PUT'],
+            endpoint=self.client.update_collection,
         )
 
     def register_delete_collection(self):
-        """Register delete collection endpoint (DELETE /collections/{collectionId})."""
+        """Register delete collection endpoint (DELETE /collections/{collection_id})."""
         self.router.add_api_route(
             name="Delete Collection",
-            path="/collections/{collectionId}",
+            path="/collections/{collection_id}",
             response_model=Collection if self.settings.enable_response_models else None,
             response_class=self.response_class,
             response_model_exclude_unset=True,
