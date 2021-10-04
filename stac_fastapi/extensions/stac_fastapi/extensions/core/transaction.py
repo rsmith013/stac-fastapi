@@ -67,10 +67,6 @@ class TransactionExtension(ApiExtension):
         self.router.add_api_route(
             name="Create Item",
             path="/collections/{collection_id}/items",
-            response_model=Item if self.settings.enable_response_models else None,
-            response_class=self.response_class,
-            response_model_exclude_unset=True,
-            response_model_exclude_none=True,
             methods=['POST'],
             endpoint=self.client.create_item,
         )
@@ -80,10 +76,6 @@ class TransactionExtension(ApiExtension):
         self.router.add_api_route(
             name="Update Item",
             path="/collections/{collection_id}/items/{item_id}",
-            response_model=Item if self.settings.enable_response_models else None,
-            response_class=self.response_class,
-            response_model_exclude_unset=True,
-            response_model_exclude_none=True,
             methods=['PUT'],
             endpoint=self.client.update_item,
         )
@@ -93,10 +85,6 @@ class TransactionExtension(ApiExtension):
         self.router.add_api_route(
             name="Delete Item",
             path="/collections/{collection_id}/items/{item_id}",
-            response_model=Item if self.settings.enable_response_models else None,
-            response_class=self.response_class,
-            response_model_exclude_unset=True,
-            response_model_exclude_none=True,
             methods=["DELETE"],
             endpoint=self.client.delete_item,
         )
@@ -106,10 +94,6 @@ class TransactionExtension(ApiExtension):
         self.router.add_api_route(
             name="Create Collection",
             path="/collections",
-            response_model=Collection if self.settings.enable_response_models else None,
-            response_class=self.response_class,
-            response_model_exclude_unset=True,
-            response_model_exclude_none=True,
             methods=['POST'],
             endpoint=self.client.create_collection,
         )
@@ -119,10 +103,6 @@ class TransactionExtension(ApiExtension):
         self.router.add_api_route(
             name="Update Collection",
             path="/collections/{collection_id}/",
-            response_model=Collection if self.settings.enable_response_models else None,
-            response_class=self.response_class,
-            response_model_exclude_unset=True,
-            response_model_exclude_none=True,
             methods=['PUT'],
             endpoint=self.client.update_collection,
         )
@@ -132,10 +112,6 @@ class TransactionExtension(ApiExtension):
         self.router.add_api_route(
             name="Delete Collection",
             path="/collections/{collection_id}",
-            response_model=Collection if self.settings.enable_response_models else None,
-            response_class=self.response_class,
-            response_model_exclude_unset=True,
-            response_model_exclude_none=True,
             methods=["DELETE"],
             endpoint=self.client.delete_collection,
         )
