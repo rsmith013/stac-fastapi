@@ -5,10 +5,9 @@ from typing import Callable, List, Type, Union
 import attr
 from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
-from stac_pydantic import Collection, Item
 from starlette.responses import JSONResponse, Response
 
-from stac_fastapi.api.models import APIRequest, CollectionUri, ItemUri
+from stac_fastapi.api.models import APIRequest
 from stac_fastapi.api.routes import create_async_endpoint, create_sync_endpoint
 from stac_fastapi.types import stac as stac_types
 from stac_fastapi.types.config import ApiSettings
@@ -67,7 +66,7 @@ class TransactionExtension(ApiExtension):
         self.router.add_api_route(
             name="Create Item",
             path="/collections/{collection_id}/items",
-            methods=['POST'],
+            methods=["POST"],
             endpoint=self.client.create_item,
         )
 
@@ -76,7 +75,7 @@ class TransactionExtension(ApiExtension):
         self.router.add_api_route(
             name="Update Item",
             path="/collections/{collection_id}/items/{item_id}",
-            methods=['PUT'],
+            methods=["PUT"],
             endpoint=self.client.update_item,
         )
 
@@ -94,7 +93,7 @@ class TransactionExtension(ApiExtension):
         self.router.add_api_route(
             name="Create Collection",
             path="/collections",
-            methods=['POST'],
+            methods=["POST"],
             endpoint=self.client.create_collection,
         )
 
@@ -102,8 +101,8 @@ class TransactionExtension(ApiExtension):
         """Register update collection endpoint (PUT /collections)."""
         self.router.add_api_route(
             name="Update Collection",
-            path="/collections/{collection_id}/",
-            methods=['PUT'],
+            path="/collections/{collection_id}",
+            methods=["PUT"],
             endpoint=self.client.update_collection,
         )
 
